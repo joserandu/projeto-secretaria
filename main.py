@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 # Função para contar o número de dias de aula
 # Função para contar o número de dias de aula
 def conta_dias_aulas(df, target_value):
@@ -8,6 +9,7 @@ def conta_dias_aulas(df, target_value):
         if df[column].eq(target_value).any():
             i += 1
     return i
+
 
 # Carregar o DataFrame do URL
 sheet_id = "1OzOHJaxg-4iS8KVFeaiFat237R25IHQD"
@@ -43,4 +45,5 @@ for index, row in selected_columns.iterrows():
     if encontrou_presenca:
         print(f"Nome do aluno: {nome_aluno}\nNúmero de faltas consecutivas: {faltas_consecutivas}")
     else:
-        print(f"Nome do aluno: {nome_aluno}\nNúmero de faltas consecutivas: {faltas_consecutivas} (nenhuma presença registrada)")
+        print(f"Nome do aluno: {nome_aluno}\nNúmero de faltas consecutivas: {faltas_consecutivas} (nenhuma presença "
+              f"registrada)")
