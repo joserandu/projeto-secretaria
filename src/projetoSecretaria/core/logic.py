@@ -67,7 +67,7 @@ class Aluno:
 
     def enviar_mensagem(self):
         """Aqui será realizado o loop para o envio das mensagens"""
-        
+
         pass
 
 
