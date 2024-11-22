@@ -57,20 +57,42 @@ class Aluno:
                             faltas += 1
 
                 # Adiciona o resultado para o aluno
-                lista_alunos_faltas.append({'nome': nome, 'n_faltas': faltas})
+                lista_alunos_faltas.append({'nome': nome, 'n_faltas': faltas})  # colocar o telefone
 
         return lista_alunos_faltas
 
-    def armazenar_faltantes(self):
+    @staticmethod
+    def listar_faltantes(alunos_faltas):
         """Será criado um dicionário com Nome do aluno, numero de faltas e número de telefone"""
-        pass
 
-    def enviar_mensagem(self):
+        lista_faltantes = []
+
+        for aluno in alunos_faltas:
+          if aluno['n_faltas'] > 3:
+            nome = aluno['nome']
+            faltas = aluno['n_faltas']
+            lista_faltantes.append({'nome': nome, 'n_faltas': faltas})  # colocar o telefone
+
+        return lista_faltantes
+
+    @staticmethod
+    def armazenar_faltantes(alunos_faltantes):
+        
+        """Seria interessante que aqui fosse feita alguma lógica para armazenar esses dados em uma planilha"""
+
+        historico = []
+
+        for aluno in alunos_faltantes:
+          historico.append({aluno['nome'], aluno['n_faltas']})  # colocar o telefone
+
+        return historico
+
+    @staticmethod
+    def enviar_mensagem(alunos_faltantes):
         """Aqui será realizado o loop para o envio das mensagens"""
-
         pass
-
-
+        
+        
 n_aulas = Aluno.conta_dias_aulas(df, "x")
 print(f"Número de dias de aula: {n_aulas}")
 
@@ -82,17 +104,9 @@ alunos_faltas = Aluno.contar_faltas_seguidas(df, n_aulas)
 for aluno in alunos_faltas:
     print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}")
 
-"""
-        for aula in df.iloc[i:, j:]:
-            if pd.notna(aula):
-                faltas += 1
-                j -= 1
-                if j == 0:
-                    i += 1
-            else:
-                i += 1
-                aluno = {'nome': df.iloc[i, 2], 'n_faltas': faltas}
-                lista_alunos_faltas.append(aluno)
+print("\nAlunos faltantes ----------------------------------------------------------------------------------------\n")
 
-        return lista_alunos_faltas
-"""
+alunos_faltantes = Aluno.listar_faltantes(alunos_faltas)
+
+for aluno in alunos_faltantes:
+    print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}")
