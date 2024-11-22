@@ -1,11 +1,18 @@
 import pandas as pd
 
-# Carregar o DataFrame do URL
+# Carregar aba "Chamada2024"
 sheet_id = "1OzOHJaxg-4iS8KVFeaiFat237R25IHQD"
 gid = "1619324902"  # Substitua com o gid real da aba desejada
 
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
 df = pd.read_csv(url)
+
+# Carregar aba "Cadastro"
+sheet_id2 = "1OzOHJaxg-4iS8KVFeaiFat237R25IHQD"
+gid2 = "440615686"
+
+url2 = f"https://docs.google.com/spreadsheets/d/{sheet_id2}/export?format=csv&gid={gid2}"
+df2 = pd.read_csv(url2)
 
 
 class Aluno:
@@ -15,7 +22,7 @@ class Aluno:
         self.__telefone = telefone
 
     @staticmethod
-    def contar_alunos(df):
+    def contar_alunos():
         i = 7
         n = 0
         for nome in df.iloc[i:, 2]:
@@ -25,7 +32,7 @@ class Aluno:
         return n
 
     @staticmethod
-    def conta_dias_aulas(df, procurado):
+    def conta_dias_aulas(procurado):
         i = 0
         for coluna in df.columns[7:]:  # Colunas de H em diante
             if df[coluna].eq(procurado).any():
@@ -33,12 +40,11 @@ class Aluno:
         return i
 
     @staticmethod
-    def contar_faltas_seguidas(df, n_aulas):
+    def contar_faltas_seguidas(n_aulas):
         """
         last -> n_aulas
         A partir do contar_dias_aulas, vamos obter um índice, e para esse índice, contaremos dele até acharmos um x
         """
-
         lista_alunos_faltas = []
 
         # Itera sobre as linhas a partir da linha 7 (onde estão os alunos)
@@ -56,44 +62,81 @@ class Aluno:
                         if not encontrou_presenca:  # Contar apenas antes da última presença
                             faltas += 1
 
+
+
                 # Adiciona o resultado para o aluno
-                lista_alunos_faltas.append({'nome': nome, 'n_faltas': faltas})
+                lista_alunos_faltas.append({'nome': nome, 'n_faltas': faltas, 'telefone': ''})  # colocar o telefone
 
         return lista_alunos_faltas
 
-    def armazenar_faltantes(self):
+    @staticmethod
+    def listar_faltantes(alunos_faltas):
         """Será criado um dicionário com Nome do aluno, numero de faltas e número de telefone"""
-        pass
 
-    def enviar_mensagem(self):
+        lista_faltantes = []
+
+        for aluno in alunos_faltas:
+            if aluno['n_faltas'] > 3:
+                nome = aluno['nome']
+                faltas = aluno['n_faltas']
+                lista_faltantes.append({'nome': nome, 'n_faltas': faltas})  # colocar o telefone
+
+        return lista_faltantes
+
+    @staticmethod
+    def pegar_telefone(lista_alunos):
+        for aluno in lista_alunos:
+            aluno_nome = aluno['nome']
+            telefone = None
+
+            for i, nome in df2.iloc[:, 19].items():
+                if nome == aluno_nome:
+                    telefone = df2.iloc[i, 77]
+                    break
+
+            aluno['telefone'] = telefone
+
+        return lista_alunos
+
+    @staticmethod
+    def armazenar_faltantes(alunos_faltantes):
+
+        """Seria interessante que aqui fosse feita alguma lógica para armazenar esses dados em uma planilha"""
+
+        historico = []
+
+        for aluno in alunos_faltantes:
+            historico.append({aluno['nome'], aluno['n_faltas']})  # colocar o telefone
+
+        return historico
+
+    @staticmethod
+    def enviar_mensagem(alunos_faltantes):
         """Aqui será realizado o loop para o envio das mensagens"""
-
         pass
 
 
-n_aulas = Aluno.conta_dias_aulas(df, "x")
+n_aulas = Aluno.conta_dias_aulas("x")
 print(f"Número de dias de aula: {n_aulas}")
 
-n_alunos = Aluno.contar_alunos(df)
+n_alunos = Aluno.contar_alunos()
 print(f"Número de alunos: {n_alunos}")
 
-alunos_faltas = Aluno.contar_faltas_seguidas(df, n_aulas)
+lista_alunos = Aluno.contar_faltas_seguidas(n_aulas)
+
+# for aluno in lista_alunos:
+#     print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}")
+
+alunos_faltas = Aluno.pegar_telefone(lista_alunos)
 
 for aluno in alunos_faltas:
-    print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}")
+    print(f"Aluno: {aluno['nome']} \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
+          f"\t \t \tTelefone: {aluno.get('telefone')}")
 
-"""
-        for aula in df.iloc[i:, j:]:
-            if pd.notna(aula):
-                faltas += 1
-                j -= 1
-                if j == 0:
-                    i += 1
-            else:
-                i += 1
-                aluno = {'nome': df.iloc[i, 2], 'n_faltas': faltas}
-                lista_alunos_faltas.append(aluno)
+print("\nAlunos faltantes ----------------------------------------------------------------------------------------\n")
 
-        return lista_alunos_faltas
-"""
+alunos_faltantes = Aluno.listar_faltantes(lista_alunos)
 
+for aluno in alunos_faltantes:
+    print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
+          f"\t \t \t \t \t \t \tTelefone: {aluno.get('telefone')}")
