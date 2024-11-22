@@ -6,7 +6,7 @@
 
 <h3>Ferramentas</h3>
 
-- <a href="https://azure.microsoft.com/pt-br/products/devops">Azure DevOps</a>;
+- <a href="https://trello.com/pt-BR">Trello</a>;
 - <a href="https://www.python.org/">Python</a>;
 - <a href="https://www.djangoproject.com/">Django</a>;
 - <a href="https://pandas.pydata.org/">Biblioteca Pandas</a>;
