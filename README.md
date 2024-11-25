@@ -1,4 +1,8 @@
-<h1>Projeto para Secretaria de Cursinho Popular :large_blue_circle::green_circle::yellow_circle::red_circle:</h1>
+<h1>Projeto para Secretaria do Cursinho Comunitário Bonsucesso :large_blue_circle::green_circle::yellow_circle::red_circle:</h1>
+
+<h2>Arquivo lógic.py</h2>
+
+- A primeira parte é carregar o Data Frame, ou seja o site no qual está alocado a planilha.
 
 <h2>Escopo</h2>
 
