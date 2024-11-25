@@ -1,4 +1,10 @@
 import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
+import urllib
+import urllib.parse
+from selenium.webdriver.common.by import By
 
 # Carregar aba "Chamada2024"
 sheet_id = "1OzOHJaxg-4iS8KVFeaiFat237R25IHQD"
@@ -8,18 +14,13 @@ url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid=
 df = pd.read_csv(url)
 
 # Carregar aba "Cadastro"
-sheet_id2 = "1OzOHJaxg-4iS8KVFeaiFat237R25IHQD"
 gid2 = "440615686"
 
-url2 = f"https://docs.google.com/spreadsheets/d/{sheet_id2}/export?format=csv&gid={gid2}"
+url2 = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid2}"
 df2 = pd.read_csv(url2)
 
 
 class Aluno:
-    def __init__(self, nome, n_faltas, telefone):
-        self.__nome = nome
-        self.__n_faltas = n_faltas
-        self.__telefone = telefone
 
     @staticmethod
     def contar_alunos():
@@ -41,28 +42,21 @@ class Aluno:
 
     @staticmethod
     def contar_faltas_seguidas(n_aulas):
-        """
-        last -> n_aulas
-        A partir do contar_dias_aulas, vamos obter um índice, e para esse índice, contaremos dele até acharmos um x
-        """
+
         lista_alunos_faltas = []
 
-        # Itera sobre as linhas a partir da linha 7 (onde estão os alunos)
-        for i, nome in enumerate(df.iloc[6:, 2], start=6):  # Coluna C contém os nomes
-            if pd.notna(nome):  # Ignorar linhas vazias na coluna de nomes
+        for i, nome in enumerate(df.iloc[6:, 2], start=6):
+            if pd.notna(nome):
                 faltas = 0
-                encontrou_presenca = False  # Flag para identificar a última presença
+                encontrou_presenca = False
 
-                # Itera pelas colunas de presença (da última aula até a primeira)
-                for aula in reversed(df.iloc[i, 7:7 + n_aulas]):  # Colunas de H em diante
-                    if pd.notna(aula):  # Se encontrar uma presença (x)
+                for aula in reversed(df.iloc[i, 7:7 + n_aulas]):
+                    if pd.notna(aula):
                         encontrou_presenca = True
-                        break  # Parar o loop ao encontrar a última presença
+                        break
                     else:
-                        if not encontrou_presenca:  # Contar apenas antes da última presença
+                        if not encontrou_presenca:
                             faltas += 1
-
-
 
                 # Adiciona o resultado para o aluno
                 lista_alunos_faltas.append({'nome': nome, 'n_faltas': faltas, 'telefone': ''})  # colocar o telefone
@@ -84,7 +78,7 @@ class Aluno:
         return lista_faltantes
 
     @staticmethod
-    def pegar_telefone(lista_alunos):
+    def adicionar_telefone(lista_alunos):
         for aluno in lista_alunos:
             aluno_nome = aluno['nome']
             telefone = None
@@ -101,20 +95,64 @@ class Aluno:
     @staticmethod
     def armazenar_faltantes(alunos_faltantes):
 
-        """Seria interessante que aqui fosse feita alguma lógica para armazenar esses dados em uma planilha"""
+        """
+        Prioridade Média:
+
+        Seria interessante que aqui fosse feita alguma lógica para armazenar esses dados em uma planilha
+        """
 
         historico = []
 
         for aluno in alunos_faltantes:
-            historico.append({aluno['nome'], aluno['n_faltas']})  # colocar o telefone
+            historico.append({aluno['nome'], aluno['n_faltas'], aluno['telefone']})  # colocar o telefone
 
         return historico
 
     @staticmethod
     def enviar_mensagem(alunos_faltantes):
         """Aqui será realizado o loop para o envio das mensagens"""
-        pass
 
+        # Defina o número de telefone e a mensagem
+        numero = "https://wa.me/11992135703"
+        mensagem = "Essa é uma mensagem automática de teste para um projeto meu. Não sufoque o artista."
+
+        # Codifica a mensagem para URL encoding
+        texto = urllib.parse.quote(mensagem)
+        link = f"{numero}?text={texto}"
+
+        # Inicializa o navegador
+        navegador = webdriver.Chrome()
+
+        # Abre a página do WhatsApp Web
+        navegador.get("https://web.whatsapp.com/")
+
+        # Artifício para a página web não fechar no final da execução do código
+        input("Pressione Enter após escanear o QR code e carregar o WhatsApp Web...")
+
+        # Verificação se estamos na página do WhatsApp, id="side" é o da barra lateral de conversas
+        while len(navegador.find_elements(By.ID, "side")) < 1:
+            time.sleep(1)
+
+        # Abrir o link com a mensagem
+        navegador.get(link)
+
+        # Verificação se a conversa foi aberta, id="main" é o da área principal de conversas
+        while len(navegador.find_elements(By.ID, "main")) < 1:
+            time.sleep(1)
+
+        # Enviar a mensagem
+        campo_de_mensagem = navegador.find_element(By.XPATH,
+                                                   '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div[1]/div/div/p')
+        campo_de_mensagem.send_keys(Keys.ENTER)
+
+        # Mantém o navegador aberto por um tempo para garantir que a mensagem seja enviada
+        time.sleep(15)
+
+        # Fecha o navegador
+        navegador.quit()
+
+
+# Main
 
 n_aulas = Aluno.conta_dias_aulas("x")
 print(f"Número de dias de aula: {n_aulas}")
@@ -127,7 +165,7 @@ lista_alunos = Aluno.contar_faltas_seguidas(n_aulas)
 # for aluno in lista_alunos:
 #     print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}")
 
-alunos_faltas = Aluno.pegar_telefone(lista_alunos)
+alunos_faltas = Aluno.adicionar_telefone(lista_alunos)
 
 for aluno in alunos_faltas:
     print(f"Aluno: {aluno['nome']} \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
@@ -136,7 +174,10 @@ for aluno in alunos_faltas:
 print("\nAlunos faltantes ----------------------------------------------------------------------------------------\n")
 
 alunos_faltantes = Aluno.listar_faltantes(lista_alunos)
+alunos_faltantes = Aluno.adicionar_telefone(alunos_faltantes)
 
 for aluno in alunos_faltantes:
-    print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
-          f"\t \t \t \t \t \t \tTelefone: {aluno.get('telefone')}")
+    print(f"Aluno: {aluno['nome']} \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
+          f"\t \t \tTelefone: {aluno['telefone']}")
+
+Aluno.enviar_mensagem(alunos_faltantes)
