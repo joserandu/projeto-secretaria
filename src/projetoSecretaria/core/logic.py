@@ -112,6 +112,16 @@ class Aluno:
     def enviar_mensagem(alunos_faltantes):
         """Aqui será realizado o loop para o envio das mensagens"""
 
+        # Inicializa o navegador
+        navegador = webdriver.Chrome()
+
+        # Abre a página do WhatsApp Web
+        navegador.get("https://web.whatsapp.com/")
+
+        # Verificação se estamos na página do WhatsApp, id="side" é o da barra lateral de conversas
+        while len(navegador.find_elements(By.ID, "side")) < 1:
+            time.sleep(1)
+
         # Defina o número de telefone e a mensagem
         numero = "https://wa.me/11992135703"
         mensagem = "Essa é uma mensagem automática de teste para um projeto meu. Não sufoque o artista."
@@ -120,21 +130,18 @@ class Aluno:
         texto = urllib.parse.quote(mensagem)
         link = f"{numero}?text={texto}"
 
-        # Inicializa o navegador
-        navegador = webdriver.Chrome()
-
-        # Abre a página do WhatsApp Web
-        navegador.get("https://web.whatsapp.com/")
-
-        # Artifício para a página web não fechar no final da execução do código
-        input("Pressione Enter após escanear o QR code e carregar o WhatsApp Web...")
-
-        # Verificação se estamos na página do WhatsApp, id="side" é o da barra lateral de conversas
-        while len(navegador.find_elements(By.ID, "side")) < 1:
-            time.sleep(1)
-
         # Abrir o link com a mensagem
         navegador.get(link)
+
+        while len(navegador.find_elements(By.ID, "action-button")) < 1:
+            time.sleep(1)
+
+        navegador.find_element(By.ID, "action-button").click()
+
+        while len(navegador.find_elements(By.LINK_TEXT, "usar o WhatsApp Web")) < 1:
+            time.sleep(1)
+
+        navegador.find_element(By.LINK_TEXT, "usar o WhatsApp Web").click()
 
         # Verificação se a conversa foi aberta, id="main" é o da área principal de conversas
         while len(navegador.find_elements(By.ID, "main")) < 1:
@@ -149,7 +156,7 @@ class Aluno:
         time.sleep(15)
 
         # Fecha o navegador
-        navegador.quit()
+        # navegador.quit()
 
 
 # Main
