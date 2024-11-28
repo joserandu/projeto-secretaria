@@ -122,69 +122,88 @@ class Aluno:
         while len(navegador.find_elements(By.ID, "side")) < 1:
             time.sleep(1)
 
-        # Defina o número de telefone e a mensagem
-        numero = "https://wa.me/11992135703"
-        mensagem = "Essa é uma mensagem automática de teste para um projeto meu. Não sufoque o artista."
+        for aluno in alunos_faltantes:
 
-        # Codifica a mensagem para URL encoding
-        texto = urllib.parse.quote(mensagem)
-        link = f"{numero}?text={texto}"
+            telefone = aluno.get('telefone')
 
-        # Abrir o link com a mensagem
-        navegador.get(link)
+            if not telefone:
+                # Se o telefone é None, string vazia, ou 0, ignorar e passar para o próximo aluno
+                continue
 
-        while len(navegador.find_elements(By.ID, "action-button")) < 1:
-            time.sleep(1)
+            try:
 
-        navegador.find_element(By.ID, "action-button").click()
+                # Define o número de telefone e a mensagem
+                telefone = aluno['telefone']
+                mensagem = "Essa é uma mensagem automática de teste para um projeto meu. Não sufoque o artista."
 
-        while len(navegador.find_elements(By.LINK_TEXT, "usar o WhatsApp Web")) < 1:
-            time.sleep(1)
+                # Codifica a mensagem para URL encoding
+                texto = urllib.parse.quote(mensagem)
+                link = f"{telefone}?text={texto}"
 
-        navegador.find_element(By.LINK_TEXT, "usar o WhatsApp Web").click()
+                # Abrir o link com a mensagem
+                navegador.get(link)
 
-        # Verificação se a conversa foi aberta, id="main" é o da área principal de conversas
-        while len(navegador.find_elements(By.ID, "main")) < 1:
-            time.sleep(1)
+                while len(navegador.find_elements(By.ID, "action-button")) < 1:
+                    time.sleep(1)
 
-        # Enviar a mensagem
-        campo_de_mensagem = navegador.find_element(By.XPATH,
-                                                   '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div[1]/div/div/p')
-        campo_de_mensagem.send_keys(Keys.ENTER)
+                navegador.find_element(By.ID, "action-button").click()
 
-        # Mantém o navegador aberto por um tempo para garantir que a mensagem seja enviada
-        time.sleep(15)
+                while len(navegador.find_elements(By.LINK_TEXT, "usar o WhatsApp Web")) < 1:
+                    time.sleep(1)
+
+                navegador.find_element(By.LINK_TEXT, "usar o WhatsApp Web").click()
+
+                # Verificação se a conversa foi aberta, id="main" é o da área principal de conversas
+                while len(navegador.find_elements(By.ID, "main")) < 1:
+                    time.sleep(1)
+
+                # Enviar a mensagem
+                campo_de_mensagem = navegador.find_element(By.XPATH,
+                                                           '//*[@id="main"]/footer/div[1]/div/span/div/div[2]/div[1]/'
+                                                           'div/div/p')
+                campo_de_mensagem.send_keys(Keys.ENTER)
+
+                # Mantém o navegador aberto por um tempo para garantir que a mensagem seja enviada
+                time.sleep(15)
+
+            except Exception as e:
+                print(f"Erro ao enviar mensagem para o telefone {telefone}: {e}")
 
         # Fecha o navegador
-        # navegador.quit()
+        navegador.quit()
 
 
 # Main
 
-n_aulas = Aluno.conta_dias_aulas("x")
-print(f"Número de dias de aula: {n_aulas}")
+def main():
 
-n_alunos = Aluno.contar_alunos()
-print(f"Número de alunos: {n_alunos}")
+    n_aulas = Aluno.conta_dias_aulas("x")
+    print(f"Número de dias de aula: {n_aulas}")
 
-lista_alunos = Aluno.contar_faltas_seguidas(n_aulas)
+    n_alunos = Aluno.contar_alunos()
+    print(f"Número de alunos: {n_alunos}")
 
-# for aluno in lista_alunos:
-#     print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}")
+    lista_alunos = Aluno.contar_faltas_seguidas(n_aulas)
 
-alunos_faltas = Aluno.adicionar_telefone(lista_alunos)
+    # for aluno in lista_alunos:
+    #     print(f"Aluno: {aluno['nome']} \t \t \t \t \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}")
 
-for aluno in alunos_faltas:
-    print(f"Aluno: {aluno['nome']} \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
-          f"\t \t \tTelefone: {aluno.get('telefone')}")
+    alunos_faltas = Aluno.adicionar_telefone(lista_alunos)
 
-print("\nAlunos faltantes ----------------------------------------------------------------------------------------\n")
+    for aluno in alunos_faltas:
+        print(f"Aluno: {aluno['nome']} \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
+              f"\t \t \tTelefone: {aluno.get('telefone')}")
 
-alunos_faltantes = Aluno.listar_faltantes(lista_alunos)
-alunos_faltantes = Aluno.adicionar_telefone(alunos_faltantes)
+    print("\nAlunos faltantes --------------------------------------------------------------------------------------\n")
 
-for aluno in alunos_faltantes:
-    print(f"Aluno: {aluno['nome']} \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
-          f"\t \t \tTelefone: {aluno['telefone']}")
+    alunos_faltantes = Aluno.listar_faltantes(lista_alunos)
+    alunos_faltantes = Aluno.adicionar_telefone(alunos_faltantes)
 
-Aluno.enviar_mensagem(alunos_faltantes)
+    for aluno in alunos_faltantes:
+        print(f"Aluno: {aluno['nome']} \t \t \t Número de faltas consecutivas: {aluno['n_faltas']}"
+              f"\t \t \tTelefone: {aluno['telefone']}")
+
+    Aluno.enviar_mensagem(alunos_faltantes)
+
+
+main()
