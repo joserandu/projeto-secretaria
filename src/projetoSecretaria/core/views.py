@@ -1,5 +1,6 @@
 from django.shortcuts import render
-# from .logic import main
+from .logic import main
+from django.http import HttpResponse
 
 
 def index(request):
@@ -7,5 +8,14 @@ def index(request):
     return render(request, 'index.html')
 
 
-# def enviar_mensagem():
-#     return main()
+def login(request):
+    return render(request, 'login.html')
+
+
+def envio_mensagens_ccb(request):
+    return render(request, 'envio_mensagens_ccb.html')
+
+
+def enviar_mensagens_ccb(request):
+    main()
+    return HttpResponse("Mensagens enviadas com sucesso!")
