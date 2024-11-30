@@ -134,6 +134,7 @@ class Aluno:
 
                 # Define o número de telefone e a mensagem
                 telefone = aluno['telefone']
+<<<<<<< HEAD
                 nome = aluno['nome']
                 mensagem = f"""
 Sentimos sua falta!
@@ -154,6 +155,9 @@ Um abraço,
 
 Cursinho Comunitário Bonsucesso.
                 """
+=======
+                mensagem = "Sentimos sua falta!\n\nBom dia/Boa tarde, [Nome do Aluno],\nEsperamos que você esteja bem.\n\nNotamos que sua frequência no cursinho tem sido baixa e gostaríamos de saber se há algo com o qual possamos ajudar. Entendemos que imprevistos acontecem e estamos aqui para oferecer suporte, seja ele acadêmico ou até mesmo pessoal.\n\nSua presença é muito importante para nós, pois acreditamos em você e na sua capacidade de conseguir alcançar seus sonhos e objetivos.\n\nSe houver algum problema ou dificuldade que você esteja enfrentando, por favor, não deixe de nos contatar. Estamos disponíveis para conversar e encontrar soluções que possam facilitar sua participação nas aulas. \n\nAguardamos o seu retorno e desejamos que você possa retomar suas atividades conosco o mais breve possível.\n\nUm abraço,\n\nCursinho Comunitário Bonsucesso."
+>>>>>>> 85d31270fb5377ed86e5b765b1e586778139c7c3
 
                 # Codifica a mensagem para URL encoding
                 texto = urllib.parse.quote(mensagem)
