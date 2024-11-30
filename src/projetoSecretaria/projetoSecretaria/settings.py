@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%zv!zbjdo)$t^j4(&r9--0ji8h18co(s+a=g1m1^g_e19u1wua'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'Randu.pythonanywhere.com']
 
@@ -77,16 +77,18 @@ WSGI_APPLICATION = 'projetoSecretaria.wsgi.application'
 
 """
 Databases antes das alterações:
+"""
 
+# Database usada no desenvolvimento:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Database usada em produção
 """
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -97,7 +99,7 @@ DATABASES = {
         'PORT': '3306',
     }
 }
-
+"""
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
