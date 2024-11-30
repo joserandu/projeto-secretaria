@@ -25,3 +25,7 @@ tzdata==2023.4
 virtualenv==20.21.0
 virtualenvwrapper-win==1.2.7
 whitenoise==6.7.0
+
+selenium~=4.27.0
+pip~=24.3.1
+setuptools~=47.1.0
